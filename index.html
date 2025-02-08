@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epic Age Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        function calculateAge() {
+            let birthdateInput = document.getElementById("birthdate").value;
+            if (!birthdateInput) return;
+            
+            let birthdate = new Date(birthdateInput);
+            let today = new Date();
+            
+            let years = today.getFullYear() - birthdate.getFullYear();
+            let months = today.getMonth() - birthdate.getMonth();
+            let days = today.getDate() - birthdate.getDate();
+            
+            if (days < 0) {
+                months--;
+                days += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+            }
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+            
+            document.getElementById("result").innerHTML = `🎉 You are <span class='text-3xl font-bold'>${years}</span> years, <span class='text-2xl'>${months}</span> months, and <span class='text-2xl'>${days}</span> days old!`;
+            
+            calculateNextBirthday(birthdate);
+            getZodiacSign(birthdate);
+            document.getElementById("tryAgain").style.display = "block";
+        }
+        
+        function calculateNextBirthday(birthdate) {
+            let today = new Date();
+            let nextBirthday = new Date(today.getFullYear(), birthdate.getMonth(), birthdate.getDate());
+            
+            if (today > nextBirthday) {
+                nextBirthday.setFullYear(today.getFullYear() + 1);
+            }
+            
+            let diffTime = Math.ceil((nextBirthday - today) / (1000 * 60 * 60 * 24));
+            document.getElementById("birthday-countdown").innerHTML = `🎂 Your next birthday is in <span class="text-xl font-bold">${diffTime}</span> days!`;
+        }
+
+        function getZodiacSign(birthdate) {
+            const zodiacSigns = [
+                { sign: "Capricorn", start: "12-22", end: "01-19" },
+                { sign: "Aquarius", start: "01-20", end: "02-18" },
+                { sign: "Pisces", start: "02-19", end: "03-20" },
+                { sign: "Aries", start: "03-21", end: "04-19" },
+                { sign: "Taurus", start: "04-20", end: "05-20" },
+                { sign: "Gemini", start: "05-21", end: "06-20" },
+                { sign: "Cancer", start: "06-21", end: "07-22" },
+                { sign: "Leo", start: "07-23", end: "08-22" },
+                { sign: "Virgo", start: "08-23", end: "09-22" },
+                { sign: "Libra", start: "09-23", end: "10-22" },
+                { sign: "Scorpio", start: "10-23", end: "11-21" },
+                { sign: "Sagittarius", start: "11-22", end: "12-21" }
+            ];
+            let monthDay = birthdate.toISOString().slice(5, 10);
+            let zodiac = zodiacSigns.find(z => monthDay >= z.start || monthDay <= z.end)?.sign || "Unknown";
+            document.getElementById("zodiac-info").innerHTML = `🔮 Your Zodiac Sign: <span class="font-bold">${zodiac}</span>`;
+        }
+
+        function compareAge() {
+            let yourAge = document.getElementById("result").innerText.match(/\d+/)[0]; 
+            let otherAge = document.getElementById("compare-age").value;
+            if (!otherAge) return;
+            let difference = Math.abs(yourAge - otherAge);
+            document.getElementById("comparison-result").innerText = `📊 The age difference is ${difference} years.`;
+        }
+
+        function calculateFutureAge() {
+            let birthdateInput = document.getElementById("birthdate").value;
+            let futureYear = document.getElementById("future-year").value;
+            if (!birthdateInput || !futureYear) return;
+            let birthYear = new Date(birthdateInput).getFullYear();
+            let futureAge = futureYear - birthYear;
+            document.getElementById("future-age-result").innerText = `⏳ Your age in ${futureYear} will be ${futureAge} years.`;
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle("bg-gray-900");
+            document.body.classList.toggle("text-white");
+        }
+
+        function resetCalculator() {
+            document.getElementById("birthdate").value = "";
+            document.getElementById("result").innerHTML = "";
+            document.getElementById("birthday-countdown").innerHTML = "";
+            document.getElementById("zodiac-info").innerHTML = "";
+            document.getElementById("comparison-result").innerHTML = "";
+            document.getElementById("future-age-result").innerHTML = "";
+            document.getElementById("tryAgain").style.display = "none";
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-r from-purple-500 to-blue-500 min-h-screen flex flex-col items-center justify-center text-white p-4">
+    <div class="bg-white text-black p-8 rounded-xl shadow-xl max-w-lg text-center">
+        <h1 class="text-4xl font-bold mb-4">🚀 Epic Age Calculator</h1>
+        <p class="mb-4">Enter your birthdate to discover your exact age!</p>
+        <input type="date" id="birthdate" class="p-3 rounded-lg border-2 border-gray-300 focus:border-blue-500 w-full mb-4">
+        <button onclick="calculateAge()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-800 transition">Calculate Age</button>
+        <p id="result" class="text-xl font-semibold mt-6"></p>
+        <p id="birthday-countdown" class="mt-4"></p>
+        <p id="zodiac-info" class="mt-4"></p>
+
+        <h2 class="text-2xl font-semibold mt-6">📊 Age Comparison</h2>
+        <input type="number" id="compare-age" placeholder="Enter another age" class="p-2 rounded-lg border-2 border-gray-300 focus:border-blue-500 w-full mt-2">
+        <button onclick="compareAge()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-800 transition mt-2">Compare</button>
+        <p id="comparison-result" class="mt-4"></p>
+
+        <h2 class="text-2xl font-semibold mt-6">⏳ Future Age Calculator</h2>
+        <input type="number" id="future-year" placeholder="Enter future year" class="p-2 rounded-lg border-2 border-gray-300 focus:border-blue-500 w-full mt-2">
+        <button onclick="calculateFutureAge()" class="bg-yellow-600 text-white px-6 py-2 rounded-lg hover:bg-yellow-800 transition mt-2">Calculate</button>
+        <p id="future-age-result" class="mt-4"></p>
+
+        <button onclick="toggleDarkMode()" class="bg-gray-700 text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition mt-4">Toggle Dark Mode</button>
+
+        <button id="tryAgain" onclick="resetCalculator()" class="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-800 transition mt-4 hidden">Try Again</button>
+    </div>
+</body>
+</html>
